@@ -1,3 +1,5 @@
+const MAX_RACING_COUNT=5
+const CAR_GO_PROBABILITY=4
 export function createPlayerList (carNames){
     return carNames.split(",")
 }
@@ -36,19 +38,36 @@ export function createRandomNumberBetweenZeroToNine(){
     return Math.floor(Math.random()*10) 
 }
 
-function playGamesForCertainTimes(playerList){
+export function playGamesForCertainTimesForEveryPlayers(playerList){
     let playerAndResultMap = createPlayerAndResultMap(playerList)
+   
     for(let i=0;i<MAX_RACING_COUNT;i++){
-        for(let j=0;j<playerList.length;j++){
-            let prev = playerAndResultMap.get(playerList[j])
-            if(decideGoOrStopRandomly(createRandomNumberBetweenZeroToNine())){
-                playerAndResultMap.set(playerList[j],prev+1)
-            }
-            console.log(playerList[j]+":"+"_".repeat(playerAndResultMap.get(playerList[j])))
-        }
-        console.log(`\n`)
+        playGameForOneTimeForEveryPlayers(playerList,playerAndResultMap)
+        gameResultLogger("divider")
     }
     return playerAndResultMap;
+}
+
+
+export function playGameForOneTimeForEveryPlayers(playerList,playerAndResultMap){
+    for(let j=0;j<playerList.length;j++){
+        let prev = playerAndResultMap.get(playerList[j])
+        if(decideGoOrStopRandomly(createRandomNumberBetweenZeroToNine())){
+            playerAndResultMap.set(playerList[j],prev+1)
+        }
+        const loggingInfo ={"player":playerList[j], "playResult":playerAndResultMap.get(playerList[j])}
+        gameResultLogger("play",loggingInfo)
+    }
+}
+
+export function gameResultLogger(type,loggingInfo){
+    if(type==="play"){
+        const {player, playResult}=loggingInfo
+        console.log(player+":"+"_".repeat(playResult))
+    }
+    if(type==="divider"){
+        console.log(`\n`)
+    }
 }
 
 function decideWinner(playerAndResultMap){
@@ -86,21 +105,20 @@ function printWinnerOfTheRace(winnersArray){
 
 
 
-function play(){
-    const playerList=createPlayerList("hae,sang,won")
+export function playRacingGame(inputString){
+    const playerList=createPlayerList(inputString)
     if(checkCarNameValidation(playerList)){
-        const playerAndResultMap=playGamesForCertainTimes(playerList)
+        const playerAndResultMap=playGamesForCertainTimesForEveryPlayers(playerList)
         const gameResult=decideWinner(playerAndResultMap)
         printWinnerOfTheRace(gameResult)
     }else{
-        console.log("checkValidation")
+        return "program quit"
     }
 }
 
-play()
+playRacingGame("hae,sang,won")
 
-const MAX_RACING_COUNT=5
-const CAR_GO_PROBABILITY=4
+
 
 
 
